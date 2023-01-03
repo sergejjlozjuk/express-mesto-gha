@@ -17,7 +17,7 @@ const getUserById = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof ValidationError ) {
-        res.status(400).send({ message: err.message })
+        res.status(404).send({ message: err.message })
         return
       }if (err.name === 'CastError') {
         res.status(400).send({message: err.message})
