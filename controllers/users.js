@@ -13,11 +13,14 @@ const getUserById = (req, res) => {
         res.status(200).send(user)
         return
       }
-      throw new ValidationError('Переданны некорректные данные')
+      throw new ValidationError('Такого пользователя не существует')
     })
     .catch((err) => {
-      if (err.name === "CastError" ) {
+      if (err instanceof ValidationError ) {
         res.status(400).send({ message: err.message })
+        return
+      }if (err.name === 'CastError') {
+        res.status(400).send({message: err.message})
         return
       }
       res.status(500).send({ message: 'Ошибка на сервере' })
