@@ -18,6 +18,9 @@ app.use((req, res, next) => {
 })
 app.use('/', cardsRouter)
 app.use('/', usersRouter)
+app.use('*', (req, res) => {
+  res.status(404).send({message: 'Такой страницы не существует!'})
+})
 app.listen(PORT)
 
 

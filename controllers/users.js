@@ -13,11 +13,11 @@ const getUserById = (req, res) => {
         res.status(200).send(user)
         return
       }
-      throw new NotFoundError('Такого пользователя не существует')
+      throw new ValidationError('Переданны некорректные данные')
     })
     .catch((err) => {
-      if (err instanceof NotFoundError) {
-        res.status(err.statusCode).send({ message: err.message })
+      if (err.name === "CastError" ) {
+        res.status(400).send({ message: err.message })
         return
       }
       res.status(500).send({ message: 'Ошибка на сервере' })
@@ -27,15 +27,11 @@ const createUser = (req, res) => {
   const { name, about, avatar } = req.body
   User.create({ name, about, avatar })
     .then((user) => {
-      if (user) {
         res.status(201).send(user)
-        return
-      }
-      throw new ValidationError('Данные для создания введены не корректно')
     })
     .catch((err) => {
-      if (err instanceof ValidationError) {
-        res.status(err.statusCode).send({ message: err.message })
+      if (err.name === "ValidationError") {
+        res.status(400).send({ message: err.message })
         return
       }
       res.status(500).send({ message: 'Ошибка на сервере' })

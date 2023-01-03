@@ -6,16 +6,10 @@ const createCard = (req, res) => {
   const { name, link } = req.body
   card
     .create({ name, link, owner })
-    .then((card) => {
-      if (card) {
-        res.status(201).send(card)
-        return
-      }
-      throw new ValidationError('Данные для создания введены не корректно')
-    })
+    .then((card) => res.status(201).send(card))
     .catch((err) => {
-      if (err instanceof ValidationError) {
-        res.status(err.statusCode).send({ message: err.message })
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: err.message })
         return
       }
       res.status(500).send({ message: 'Ошибка на сервере' })
@@ -35,24 +29,25 @@ const deleteCard = (req, res) => {
     .findByIdAndDelete(req.params.cardId)
     .then((card) => {
       if (card) {
-        res.status(200).send(`Удалена карточка: ${card}`)
+        res.status(200).send(card)
         return
-      }
-      throw new NotFoundError('Такой карточки не существует')
+      } throw new NotFoundError('Такой карточки не сущетвует')
     })
     .catch((err) => {
-      if (err instanceof NotFoundError) {
-        res.status(err.statusCode).send({ message: err.message })
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: err.message })
+        return
+      } if ( err instanceof NotFoundError) {
+        res.status(err.statusCode).send({message: err.message})
         return
       }
       res.status(500).send({ message: 'Ошибка на сервере' })
     })
 }
 const setLike = (req, res) => {
-  const id = req.user._id
   card
     .findByIdAndUpdate(
-      id,
+      req.params.cardId,
       { $addToSet: { likes: req.user._id } },
       { new: true },
     )
@@ -64,7 +59,7 @@ const setLike = (req, res) => {
       throw new NotFoundError('Такой карточки не существует')
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: err.message })
         return
       }
@@ -76,9 +71,12 @@ const setLike = (req, res) => {
     })
 }
 const deleteLike = (req, res) => {
-  const id = req.user._id
   card
-    .findByIdAndUpdate(id, { $pull: { likes: req.user._id } }, { new: true })
+    .findByIdAndUpdate(
+      req.params.cardId,
+      { $pull: { likes: req.user._id } },
+      { new: true },
+    )
     .then((card) => {
       if (card) {
         res.status(200).send(card)
@@ -87,7 +85,7 @@ const deleteLike = (req, res) => {
       throw new NotFoundError('Такой карточки не существует')
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: err.message })
         return
       }
