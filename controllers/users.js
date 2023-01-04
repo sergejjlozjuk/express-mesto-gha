@@ -1,6 +1,5 @@
 const User = require('../models/user')
 const { NotFoundError, ValidationError } = require('../error/error')
-
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
@@ -8,36 +7,34 @@ const getUsers = (req, res) => {
 }
 const getUserById = (req, res) => {
   User.findById(req.params.userId)
+    .orFail(new NotFoundError('Такого пользователя не существует'))
     .then((user) => {
-      if (user) {
-        res.status(200).send(user)
-        return
-      }
-      throw new ValidationError('Такого пользователя не существует')
+      res.status(200).send(user)
     })
     .catch((err) => {
-      if (err instanceof ValidationError ) {
-        res.status(404).send({ message: err.message })
-        return
-      }if (err.name === 'CastError') {
-        res.status(400).send({message: err.message})
-        return
+      if (err instanceof NotFoundError) {
+        res.status(err.statusCode).send({ message: err.message })
       }
-      res.status(500).send({ message: 'Ошибка на сервере' })
+       else if (err.name === 'CastError') {
+        res.status(400).send({ message: err.message })
+      }
+      else {
+        res.status(500).send({ message: 'Ошибка на сервере' })
+      }
     })
 }
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body
   User.create({ name, about, avatar })
     .then((user) => {
-        res.status(201).send(user)
+      res.status(201).send(user)
     })
     .catch((err) => {
-      if (err.name === "ValidationError") {
+      if (err.name === 'ValidationError') {
         res.status(400).send({ message: err.message })
-        return
+      } else {
+        res.status(500).send({ message: 'Ошибка на сервере' })
       }
-      res.status(500).send({ message: 'Ошибка на сервере' })
     })
 }
 const updateProfile = (req, res) => {
@@ -54,20 +51,18 @@ const updateProfile = (req, res) => {
     .then((user) => {
       if (user) {
         res.status(200).send(user)
-        return
+      } else {
+        throw new NotFoundError('Такого пользователя не существует')
       }
-      throw new NotFoundError('Такого пользователя не существует')
     })
     .catch((err) => {
       if (err instanceof NotFoundError) {
         res.status(err.statusCode).send({ message: err.message })
-        return
-      }
-      if (err.name === 'ValidationError') {
+      } else if (err.name === 'ValidationError') {
         res.status(400).send({ message: err.message })
-        return
+      } else {
+        res.status(500).send({ message: 'Ошибка на сервере' })
       }
-      res.status(500).send({ message: 'Ошибка на сервере' })
     })
 }
 const updateAvatar = (req, res) => {
@@ -79,26 +74,24 @@ const updateAvatar = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
+      upsert: false,
     },
   )
     .then((user) => {
       if (user) {
         res.status(200).send(user)
-        return
+      } else {
+        throw new NotFoundError('Такого пользователя не существует')
       }
-      throw new NotFoundError('Такого пользователя не существует')
     })
     .catch((err) => {
       if (err instanceof NotFoundError) {
         res.status(err.statusCode).send({ message: err.message })
-        return
-      }
-      if (err.name === 'ValidationError') {
+      } else if (err.name === 'ValidationError') {
         res.status(400).send({ message: err.message })
-        return
+      } else {
+        res.status(500).send({ message: 'Ошибка на сервере' })
       }
-      res.status(500).send({ message: 'Ошибка на сервере' })
     })
 }
 

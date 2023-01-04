@@ -1,3 +1,4 @@
+const e = require('express')
 const { NotFoundError, ValidationError } = require('../error/error')
 const card = require('../models/card')
 
@@ -10,9 +11,9 @@ const createCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: err.message })
-        return
+      } else {
+        res.status(500).send({ message: 'Ошибка на сервере' })
       }
-      res.status(500).send({ message: 'Ошибка на сервере' })
     })
 }
 
@@ -30,18 +31,18 @@ const deleteCard = (req, res) => {
     .then((card) => {
       if (card) {
         res.status(200).send(card)
-        return
-      } throw new NotFoundError('Такой карточки не сущетвует')
+      } else {
+        throw new NotFoundError('Такой карточки не сущетвует')
+      }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: err.message })
-        return
-      } if ( err instanceof NotFoundError) {
-        res.status(err.statusCode).send({message: err.message})
-        return
+      } else if (err instanceof NotFoundError) {
+        res.status(err.statusCode).send({ message: err.message })
+      } else {
+        res.status(500).send({ message: 'Ошибка на сервере' })
       }
-      res.status(500).send({ message: 'Ошибка на сервере' })
     })
 }
 const setLike = (req, res) => {
@@ -54,20 +55,18 @@ const setLike = (req, res) => {
     .then((card) => {
       if (card) {
         res.status(200).send(card)
-        return
+      } else {
+        throw new NotFoundError('Такой карточки не существует')
       }
-      throw new NotFoundError('Такой карточки не существует')
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: err.message })
-        return
-      }
-      if (err instanceof NotFoundError) {
+      } else if (err instanceof NotFoundError) {
         res.status(err.statusCode).send({ message: err.message })
-        return
+      } else {
+        res.status(500).send({ message: 'Ошибка на сервере' })
       }
-      res.status(500).send({ message: 'Ошибка на сервере' })
     })
 }
 const deleteLike = (req, res) => {
@@ -80,20 +79,18 @@ const deleteLike = (req, res) => {
     .then((card) => {
       if (card) {
         res.status(200).send(card)
-        return
+      } else {
+        throw new NotFoundError('Такой карточки не существует')
       }
-      throw new NotFoundError('Такой карточки не существует')
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: err.message })
-        return
-      }
-      if (err instanceof NotFoundError) {
+      } else if (err instanceof NotFoundError) {
         res.status(err.statusCode).send({ message: err.message })
-        return
+      } else {
+        res.status(500).send({ message: 'Ошибка на сервере' })
       }
-      res.status(500).send({ message: 'Ошибка на сервере' })
     })
 }
 
