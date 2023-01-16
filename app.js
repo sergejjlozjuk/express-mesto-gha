@@ -2,24 +2,34 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
+const helmet = require('helmet')
+const rateLimit = require('express-rate-limit')
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
 const { usersRouter } = require('./routes/users')
+const limiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+})
 const { cardsRouter } = require('./routes/cards')
+const { auth } = require('./middlewares/auth')
+const { errorHandler } = require('./error/error')
+const { authRouter } = require('./routes/auth')
+const { notFoundPage } = require('./routes/error')
 const { PORT = 3000 } = process.env
 mongoose.connect(process.env.DB_CONNECT + process.env.DB_NAME)
+app.use(limiter)
+app.use(helmet())
+app.use(cookieParser())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use((req, res, next) => {
-  req.user = {
-    _id: '63af001480819306f7473d93',
-  }
-
-  next()
-})
+app.use('/', authRouter)
+app.use(auth)
 app.use('/', cardsRouter)
 app.use('/', usersRouter)
-app.use('*', (req, res) => {
-  res.status(404).send({message: 'Такой страницы не существует!'})
-})
+app.use('*', notFoundPage)
+app.use(errorHandler)
 app.listen(PORT)
