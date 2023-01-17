@@ -10,7 +10,7 @@ authRouter.post(
       email: Joi.string().required().email(),
       password: Joi.string().required().min(3),
       name: Joi.string().min(3).max(30),
-      about: Joi.string().min(5).max(200),
+      about: Joi.string().min(5).max(30),
       avatar: Joi.string().regex(regex.link),
     },
   }),
