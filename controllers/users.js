@@ -40,8 +40,12 @@ const createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => {
-      const { name, about, avatar, _id, email } = user;
-      res.status(201).send({ name, about, avatar, _id, email });
+      const {
+        name, about, avatar, _id, email,
+      } = user;
+      res.status(201).send({
+        name, about, avatar, _id, email,
+      });
     })
     .catch((err) => {
       if (err.name === 'MongoServerError') {
