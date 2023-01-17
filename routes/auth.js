@@ -1,6 +1,7 @@
-const authRouter = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
-const { createUser, login } = require('../controllers/users');
+const authRouter = require('express').Router()
+const { celebrate, Joi } = require('celebrate')
+const { createUser, login } = require('../controllers/users')
+const { regex } = require('../constants/constants')
 
 authRouter.post(
   '/signup',
@@ -8,13 +9,13 @@ authRouter.post(
     body: {
       email: Joi.string().required().email(),
       password: Joi.string().required().min(3),
-      name: Joi.string().min(3),
-      about: Joi.string().min(5),
-      avatar: Joi.string().regex(/https*:\/\/[a-z._@!?&\-=$~#'()*:[\]/0-9+,;]*/),
+      name: Joi.string().min(3).max(30),
+      about: Joi.string().min(5).max(200),
+      avatar: Joi.string().regex(regex.link),
     },
   }),
   createUser,
-);
+)
 authRouter.post(
   '/signin',
   celebrate({
@@ -24,8 +25,8 @@ authRouter.post(
     },
   }),
   login,
-);
+)
 
 module.exports = {
   authRouter,
-};
+}
