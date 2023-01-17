@@ -1,4 +1,30 @@
 {
   "extends": "airbnb-base",
-  "no-underscore-dangle": "allow"
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "no-underscore-dangle": "off",
+    "no-shadow": "off",
+    "consistent-return": "off",
+    "max-classes-per-file": "off",
+    "no-use-before-define": "off",
+    "no-unused-vars": "off",
+    "semi": "off",
+    "import/order": [
+      "off",
+      {
+        "groups": [
+          "index",
+          "sibling",
+          "parent",
+          "internal",
+          "external",
+          "builtin",
+          "object",
+          "type"
+        ]
+      }
+    ]
+  }
 }

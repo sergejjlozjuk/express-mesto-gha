@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const validator = require('validator')
+const mongoose = require('mongoose');
+const validator = require('validator');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -25,12 +25,12 @@ const cardSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'user',
-      default: undefined,
+      default: [],
     },
   ],
   createdAt: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   },
-})
-module.exports = mongoose.model('card', cardSchema)
+});
+module.exports = mongoose.model('card', cardSchema);

@@ -1,45 +1,42 @@
-const e = require('express')
 const {
   NotFoundError,
-  ValidationError,
-  AuthenticationError,
-} = require('../error/error')
-const card = require('../models/card')
+  ForbiddenError,
+} = require('../error/error');
+const card = require('../models/card');
 
 const createCard = (req, res, next) => {
-  const owner = req.user._id
-  const { name, link } = req.body
+  const owner = req.user._id;
+  const { name, link } = req.body;
   card
     .create({ name, link, owner })
-    .populate(['owner', 'likes'])
     .then((card) => res.status(201).send(card))
-    .catch(next)
-}
+    .catch(next);
+};
 
 const getCards = (req, res, next) => {
   card
     .find({})
     .populate(['owner', 'likes'])
     .then((cards) => {
-      res.send(cards)
+      res.send(cards);
     })
-    .catch(next)
-}
+    .catch(next);
+};
 const deleteCard = (req, res, next) => {
   card
     .findById(req.params.cardId)
     .populate(['owner', 'likes'])
     .orFail(new NotFoundError('Такой карточки не сущетвует'))
-    .then((cardItem) => {
-      if (cardItem.owner._id.toString() !== req.user._id) {
-        return Promise.reject(new AuthenticationError('Недостаточно прав'))
-      } else if (cardItem.owner._id.toString() === req.user._id) {
-        return card.findByIdAndDelete(req.params.cardId)
+    .then((card) => {
+      if (card.owner._id.toString() !== req.user._id) {
+        return Promise.reject(new ForbiddenError('Недостаточно прав'));
+      } if (card.owner._id.toString() === req.user._id) {
+        return card.remove()
       }
     })
     .then((card) => res.status(200).send(card))
-    .catch(next)
-}
+    .catch(next);
+};
 const setLike = (req, res, next) => {
   card
     .findByIdAndUpdate(
@@ -50,13 +47,13 @@ const setLike = (req, res, next) => {
     .populate(['owner', 'likes'])
     .then((card) => {
       if (card) {
-        res.status(200).send(card)
+        res.status(200).send(card);
       } else {
-        throw new NotFoundError('Такой карточки не существует')
+        throw new NotFoundError('Такой карточки не существует');
       }
     })
-    .catch(next)
-}
+    .catch(next);
+};
 const deleteLike = (req, res, next) => {
   card
     .findByIdAndUpdate(
@@ -67,12 +64,14 @@ const deleteLike = (req, res, next) => {
     .populate(['owner', 'likes'])
     .then((card) => {
       if (card) {
-        res.status(200).send(card)
+        res.status(200).send(card);
       } else {
-        throw new NotFoundError('Такой карточки не существует')
+        throw new NotFoundError('Такой карточки не существует');
       }
     })
-    .catch(next)
-}
+    .catch(next);
+};
 
-module.exports = { createCard, getCards, deleteCard, setLike, deleteLike }
+module.exports = {
+  createCard, getCards, deleteCard, setLike, deleteLike,
+};

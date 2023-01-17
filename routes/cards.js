@@ -1,59 +1,60 @@
-const { celebrate, Joi } = require('celebrate')
+const { celebrate, Joi } = require('celebrate');
+const { regex } = require('../constants/constants');
 const {
   getCards,
   deleteCard,
   createCard,
   setLike,
   deleteLike,
-} = require('../controllers/cards')
+} = require('../controllers/cards');
 
-const cardsRouter = require('express').Router()
+const cardsRouter = require('express').Router();
 
-cardsRouter.get('/cards', getCards)
+cardsRouter.get('/', getCards);
 cardsRouter.delete(
-  '/cards/:cardId',
+  '/:cardId',
   celebrate({
     params: {
       cardId: Joi.string()
         .required()
-        .regex(/[0-9a-zA-Z]{24}/),
+        .regex(regex.id),
     },
   }),
   deleteCard,
-)
+);
 cardsRouter.post(
-  '/cards',
+  '/',
   celebrate({
     body: {
       name: Joi.string().required().min(3),
       link: Joi.string()
         .required()
-        .regex(/https*\:\/\/[a-z\.\_\@\!\?\&\-\=\$\~\#'()\*\:\[\]\/0-9\+,;]*/),
+        .regex(regex.link),
     },
   }),
   createCard,
-)
+);
 cardsRouter.put(
-  '/cards/:cardId/likes',
+  '/:cardId/likes',
   celebrate({
     params: {
       cardId: Joi.string()
         .required()
-        .regex(/[0-9a-zA-Z]{24}/),
+        .regex(regex.id),
     },
   }),
   setLike,
-)
+);
 cardsRouter.delete(
-  '/cards/:cardId/likes',
+  '/:cardId/likes',
   celebrate({
     params: {
       cardId: Joi.string()
         .required()
-        .regex(/[0-9a-zA-Z]{24}/),
+        .regex(regex.id),
     },
   }),
   deleteLike,
-)
+);
 
-module.exports = { cardsRouter }
+module.exports = { cardsRouter };
