@@ -1,3 +1,5 @@
+const { celebrate, Joi } = require('celebrate');
+const usersRouter = require('express').Router();
 const {
   getUsers,
   getUserById,
@@ -5,16 +7,13 @@ const {
   updateAvatar,
   getUserProfile,
 } = require('../controllers/users');
-
-const usersRouter = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
 const { regex } = require('../constants/constants');
 
 usersRouter.get('/', getUsers);
 usersRouter.get('/me', getUserProfile);
 usersRouter.get('/:userId', celebrate({
   params: {
-    userId: Joi.string().required().regex(regex.id),
+    userId: Joi.string().required().hex(),
   },
 }), getUserById);
 usersRouter.patch('/users/me', celebrate({

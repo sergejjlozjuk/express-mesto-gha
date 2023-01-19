@@ -1,3 +1,4 @@
+const cardsRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const { regex } = require('../constants/constants');
 const {
@@ -8,8 +9,6 @@ const {
   deleteLike,
 } = require('../controllers/cards');
 
-const cardsRouter = require('express').Router();
-
 cardsRouter.get('/', getCards);
 cardsRouter.delete(
   '/:cardId',
@@ -17,7 +16,7 @@ cardsRouter.delete(
     params: {
       cardId: Joi.string()
         .required()
-        .regex(regex.id),
+        .hex(),
     },
   }),
   deleteCard,
@@ -40,7 +39,7 @@ cardsRouter.put(
     params: {
       cardId: Joi.string()
         .required()
-        .regex(regex.id),
+        .hex(),
     },
   }),
   setLike,
@@ -51,7 +50,7 @@ cardsRouter.delete(
     params: {
       cardId: Joi.string()
         .required()
-        .regex(regex.id),
+        .hex(),
     },
   }),
   deleteLike,

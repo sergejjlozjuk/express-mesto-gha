@@ -1,7 +1,4 @@
-const {
-  NotFoundError,
-  ForbiddenError,
-} = require('../error/error');
+const { NotFoundError, ForbiddenError } = require('../error/error');
 const card = require('../models/card');
 
 const createCard = (req, res, next) => {
@@ -9,7 +6,7 @@ const createCard = (req, res, next) => {
   const { name, link } = req.body;
   card
     .create({ name, link, owner })
-    .then((card) => res.status(201).send(card))
+    .then((cardItem) => res.status(201).send(cardItem))
     .catch(next);
 };
 
@@ -27,14 +24,14 @@ const deleteCard = (req, res, next) => {
     .findById(req.params.cardId)
     .populate(['owner', 'likes'])
     .orFail(new NotFoundError('Такой карточки не сущетвует'))
-    .then((card) => {
-      if (card.owner._id.toString() !== req.user._id) {
-        return Promise.reject(new ForbiddenError('Недостаточно прав'));
-      } if (card.owner._id.toString() === req.user._id) {
-        return card.remove()
+    .then((cardItem) => {
+      if (cardItem.owner._id.toString() !== req.user._id) {
+        Promise.reject(new ForbiddenError('Недостаточно прав'));
+      } else {
+        card.remove();
       }
     })
-    .then((card) => res.status(200).send(card))
+    .then((cardItem) => res.status(200).send(cardItem))
     .catch(next);
 };
 const setLike = (req, res, next) => {
@@ -45,9 +42,9 @@ const setLike = (req, res, next) => {
       { new: true },
     )
     .populate(['owner', 'likes'])
-    .then((card) => {
-      if (card) {
-        res.status(200).send(card);
+    .then((cardItem) => {
+      if (cardItem) {
+        res.status(200).send(cardItem);
       } else {
         throw new NotFoundError('Такой карточки не существует');
       }
@@ -62,9 +59,9 @@ const deleteLike = (req, res, next) => {
       { new: true },
     )
     .populate(['owner', 'likes'])
-    .then((card) => {
+    .then((cardItem) => {
       if (card) {
-        res.status(200).send(card);
+        res.status(200).send(cardItem);
       } else {
         throw new NotFoundError('Такой карточки не существует');
       }
@@ -73,5 +70,9 @@ const deleteLike = (req, res, next) => {
 };
 
 module.exports = {
-  createCard, getCards, deleteCard, setLike, deleteLike,
+  createCard,
+  getCards,
+  deleteCard,
+  setLike,
+  deleteLike,
 };

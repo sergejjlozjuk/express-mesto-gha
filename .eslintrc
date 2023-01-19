@@ -4,27 +4,6 @@
     "node": true
   },
   "rules": {
-    "no-underscore-dangle": "off",
-    "no-shadow": "off",
-    "consistent-return": "off",
-    "max-classes-per-file": "off",
-    "no-use-before-define": "off",
-    "no-unused-vars": "off",
-    "semi": "off",
-    "import/order": [
-      "off",
-      {
-        "groups": [
-          "index",
-          "sibling",
-          "parent",
-          "internal",
-          "external",
-          "builtin",
-          "object",
-          "type"
-        ]
-      }
-    ]
+    "no-underscore-dangle": "off"
   }
 }

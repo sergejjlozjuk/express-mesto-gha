@@ -1,13 +1,9 @@
-const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const User = require('../models/user');
 
 const { JWT_SECRET } = process.env;
-const jwt = require('jsonwebtoken');
-const {
-  NotFoundError,
-  AuthenticationError,
-  MongoServerError,
-} = require('../error/error');
+const { NotFoundError, AuthenticationError } = require('../error/error');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -37,21 +33,23 @@ const createUser = (req, res, next) => {
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
     }))
     .then((user) => {
-      const {
-        name, about, avatar, _id, email,
-      } = user;
+      const { _id } = user;
       res.status(201).send({
-        name, about, avatar, _id, email,
+        name,
+        about,
+        avatar,
+        _id,
+        email,
       });
     })
-    .catch((err) => {
-      if (err.name === 'MongoServerError') {
-        next(new MongoServerError('Пользователь с такой почтой уже существует'))
-      }
-    });
+    .catch(next);
 };
 const updateProfile = (req, res, next) => {
   const { name, about } = req.body;
@@ -96,22 +94,20 @@ const updateAvatar = (req, res, next) => {
 };
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  User.findOne({ email }).select('+password')
+  User.findOne({ email })
+    .select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(
-          new AuthenticationError('Неправильные почта или пароль'),
-        );
-      } if (user) {
-        return { matched: bcrypt.compare(password, user.password), user };
-      }
+        return Promise.reject(new AuthenticationError('Неправильные почта или пароль'));
+      } return user;
     })
-    .then(({ matched, user }) => {
+    .then((user) => {
+      const matched = bcrypt.compare(password, user.password);
       if (!matched) {
-        return Promise.reject(
+        Promise.reject(
           new AuthenticationError('Неправильные почта или пароль'),
         );
-      } if (matched) {
+      } else {
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
           expiresIn: '7d',
         });
