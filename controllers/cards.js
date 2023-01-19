@@ -26,10 +26,8 @@ const deleteCard = (req, res, next) => {
     .orFail(new NotFoundError('Такой карточки не сущетвует'))
     .then((cardItem) => {
       if (cardItem.owner._id.toString() !== req.user._id) {
-        Promise.reject(new ForbiddenError('Недостаточно прав'));
-      } else {
-        card.remove();
-      }
+        return Promise.reject(new ForbiddenError('Недостаточно прав'));
+      } return card.remove();
     })
     .then((cardItem) => res.status(200).send(cardItem))
     .catch(next);
