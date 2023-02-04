@@ -1,16 +1,18 @@
-[![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
-# Проект Mesto фронтенд + бэкенд
-
-[Ссыдка на проект](https://github.com/sergejjlozjuk/express-mesto-gha)
-## Директории
-
-`/routes` — папка с файлами роутера  
-`/controllers` — папка с файлами контроллеров пользователя и карточки   
-`/models` — папка с файлами описания схем пользователя и карточки  
-  
-Остальные директории вспомогательные, создаются при необходимости разработчиком
-
+## Приложение Mesto. Back-end
+## Возможности
+  - Запуск сервера с подключением к базе данных
+  - Регистрация, Авторизация
+  - Валидация приходящих данных
+  - Централизованная обработка ошибок
+## Технологии
+* Node.js
+* Express.js
+* Mongoose
+* MongoDB
+* Joi, celebrate, dotenv, helmet, JWT, cookieparser
 ## Запуск проекта
-
-`npm run start` — запускает сервер   
-`npm run dev` — запускает сервер с hot-reload
+1. Загрузить Архив
+2. Открыть в терминале папку с проектом
+3. `npm install` - загруска зависимостей
+4. `npm run start` — запускает сервер   
+5. `npm run dev` — запускает сервер с hot-reload
